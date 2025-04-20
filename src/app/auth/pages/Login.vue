@@ -1,0 +1,69 @@
+<template>
+  <form @submit.prevent="handleSubmit" class="max-w-[450px] w-full m-auto p-4 mt-8">
+    <div class="flex flex-col">
+      <h1 class="text-black dark:text-white font-bold text-center text-2xl">Inicio de sesión</h1>
+    </div>
+
+    <div class="flex flex-col">
+      <FormInput label="Correo" v-model:input-values="formData.email" :disabled="loading" />
+      <FormInput
+        type="password"
+        label="Contraseña"
+        v-model:input-values="formData.password"
+        :disabled="loading"
+      />
+      <button
+        type="submit"
+        class="text-white font-bold dark:text-white text-lg self-start bg-rose-500 hover:bg-rose-600 py-1 rounded-sm w-full"
+      >
+        Iniciar sesión
+      </button>
+      <p class="text-red-600 dark:text-red-400">{{ error }}</p>
+    </div>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { useRoute } from 'vue-router';
+import router from '@/router';
+import { useLogin } from '../composables/useLogin';
+import { useInputValue } from '@/composables/use-input-value';
+import validators from '@/utils/input-validators';
+import FormInput from '@/ui/inputs/FormInput.vue';
+const { slugName } = useRoute().params;
+
+const formData = reactive({
+  email: useInputValue('', validators.email),
+  password: useInputValue('', validators.password),
+});
+
+const { login, loading, error } = useLogin();
+
+function validateForm(): boolean {
+  formData.password.validate();
+  formData.email.validate();
+  const errors = Object.values(formData)
+    .map(inputValue => inputValue.error)
+    .filter(item => item);
+  if (errors.length > 0) {
+    return false;
+  }
+  return true;
+}
+
+async function handleSubmit(): Promise<void> {
+  const validated = validateForm();
+  if (!validated || loading.value) return;
+
+  const success = await login({
+    email: formData.email.text,
+    password: formData.password.text,
+    slugName: slugName as string,
+  });
+
+  if (success) {
+    router.push(`/${slugName}/dashboard`);
+  }
+}
+</script>

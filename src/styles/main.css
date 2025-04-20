@@ -3,4 +3,11 @@
 
 @theme {
     --font-nunito: 'Nunito Sans', sans-serif;
+
+    --color-primary: '#1e40af';
+    --color-gray-400: '#61676E';
+    --custom-gray-700: '#61676e';
+    --color-header: '#eff2f5';
+
+    --inset-shadow-blue-inner: inset 0 0 0 1px rgb(3, 73, 180);
 }
