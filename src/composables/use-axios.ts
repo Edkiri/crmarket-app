@@ -66,9 +66,14 @@ export default function useAxios() {
   const error: Ref<string | null> = ref(null);
   const loading: Ref<boolean> = ref(false);
   const status: Ref<number | null | undefined> = ref(null);
+  const auth = useStore('auth');
 
   const handleError = (err: any) => {
     if (isAxiosError(err)) {
+      if ([401, 403].includes(err.response!.status)) {
+        auth.logout();
+        return;
+      }
       status.value = err.response!.status;
       error.value = (err.response as any)?.data.message;
     } else {
@@ -99,10 +104,8 @@ export default function useAxios() {
         status.value = response.status;
         return response;
       }
-
-      const response = await AxiosClient.get(fetchParams.path, {
-        params: buildQueryParams(fetchParams.payload),
-      });
+      const params = buildQueryParams(fetchParams.payload);
+      const response = await AxiosClient.get(fetchParams.path, { params });
 
       status.value = response.status;
 

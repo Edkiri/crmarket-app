@@ -1,7 +1,7 @@
 import { storeToRefs } from 'pinia';
 import useAxios from '@/composables/use-axios';
 import useStore from '@/composables/use-store';
-import { Market } from '@/stores/auth-store';
+import { Market } from '@/app/auth/store/auth-store';
 
 interface LoginForm {
   email: string;

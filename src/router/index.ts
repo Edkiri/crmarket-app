@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import useStore from '@/composables/use-store';
 import NotFound from '@/ui/pages/NotFound.vue';
-import Products from '@/app/products/Products.vue';
+import Products from '@/app/products/pages/Products.vue';
 import Login from '@/app/auth/pages/Login.vue';
 
 const routes = [
