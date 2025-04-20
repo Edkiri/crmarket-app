@@ -24,14 +24,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
-import { useRoute } from 'vue-router';
 import router from '@/router';
 import { useLogin } from '../composables/useLogin';
 import { useInputValue } from '@/composables/use-input-value';
 import validators from '@/utils/input-validators';
 import FormInput from '@/ui/inputs/FormInput.vue';
-const { slugName } = useRoute().params;
+import { reactive } from 'vue';
 
 const formData = reactive({
   email: useInputValue('', validators.email),
@@ -55,15 +53,14 @@ function validateForm(): boolean {
 async function handleSubmit(): Promise<void> {
   const validated = validateForm();
   if (!validated || loading.value) return;
-
   const success = await login({
     email: formData.email.text,
     password: formData.password.text,
-    slugName: slugName as string,
+    domain: window.location.origin as string,
   });
 
   if (success) {
-    router.push(`/${slugName}/dashboard`);
+    router.push('/dashboard');
   }
 }
 </script>

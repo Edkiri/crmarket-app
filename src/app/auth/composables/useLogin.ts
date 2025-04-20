@@ -6,7 +6,7 @@ import { Market } from '@/app/auth/store/auth-store';
 interface LoginForm {
   email: string;
   password: string;
-  slugName: string;
+  domain: string;
 }
 
 interface LoginResponseInterface {
@@ -26,7 +26,7 @@ export function useLogin() {
       path: `auth/login`,
       payload: {
         ...payload,
-        slug_name: payload.slugName,
+        domain: payload.domain,
       },
     });
     if (response?.status === 200 && response.data?.data?.token) {

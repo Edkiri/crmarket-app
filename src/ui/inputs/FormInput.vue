@@ -14,7 +14,9 @@
         @focusout="handleFocusOut"
       />
     </div>
-    <span class="absolute bottom-0 right-0 left-0 block text-[12px] text-red-500">{{ localInputValues.error }}</span>
+    <span class="absolute bottom-0 right-0 left-0 block text-[12px] text-red-500">{{
+      localInputValues.error
+    }}</span>
   </div>
 </template>
 

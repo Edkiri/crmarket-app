@@ -5,14 +5,14 @@ import Products from '@/app/products/pages/Products.vue';
 import Login from '@/app/auth/pages/Login.vue';
 
 const routes = [
-  { path: '/', name: 'RootNotFound', component: NotFound },
+  { path: '/', name: 'Home', component: Login },
   {
     path: '/:slugName',
     name: 'LoginWithSlug',
     component: Login,
   },
   {
-    path: '/:slugName/dashboard',
+    path: '/dashboard',
     name: 'Dashboard',
     component: Products,
   },

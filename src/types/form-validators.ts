@@ -6,7 +6,7 @@ export interface InputValidator {
 }
 
 export interface InputValues {
-  text: Ref<string>;
-  error: Ref<string>;
-  validate: () => void;
+  text: Ref<string> | string;
+  error: Ref<string> | string;
+  validate: () => boolean;
 }
