@@ -1,7 +1,7 @@
 <template>
   <BaseModal @close="cancelModal()">
     <div class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
-      <h2 class="text-lg text-neutral-800 font-semibold mb-4">Crear Producto</h2>
+      <h2 class="text-lg text-neutral-800 font-semibold mb-4">Actualizar Producto</h2>
 
       <FormInput :input-values="form.name" label="Nombre" />
       <FormInput :input-values="form.description" label="Descripción" />
@@ -42,22 +42,42 @@ import { useInputValue } from '@/composables/use-input-value';
 import FormInput from '@/ui/inputs/FormInput.vue';
 import validators from '@/utils/input-validators';
 import { ref, onBeforeUnmount } from 'vue';
-import useCreateProduct from '../composables/useCreateProduct';
 import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
+import { Product } from '../types';
+import useUpdateProduct from '../composables/useUpdateProduct';
 
-const emit = defineEmits(['close', 'created']);
+interface Props {
+  product: Product;
+}
+
+const props = defineProps<Props>();
+
+const emit = defineEmits(['close', 'updated']);
+
+function parseIntInputValue(value: number | null | undefined): string {
+  if (value || value === 0) {
+    return String(value);
+  }
+  return '';
+}
 
 const initialFormState = () => ({
-  name: useInputValue('', validators.notEmpty),
-  reference: useInputValue('', validators.notEmpty),
-  brand: useInputValue(''),
-  description: useInputValue(''),
-  cost_price: useInputValue('', validators.nonNegativeNumber),
-  sale_price: useInputValue('', validators.nonNegativeNumber),
-  stock: useInputValue('', validators.nonNegativeNumber),
+  name: useInputValue(props.product.name, validators.notEmpty),
+  reference: useInputValue(props.product.reference, validators.notEmpty),
+  brand: useInputValue(props.product.brand ?? ''),
+  description: useInputValue(props.product.description ?? ''),
+  cost_price: useInputValue(
+    parseIntInputValue(props.product.cost_price),
+    validators.nonNegativeNumber
+  ),
+  sale_price: useInputValue(
+    parseIntInputValue(props.product.sale_price),
+    validators.nonNegativeNumber
+  ),
+  stock: useInputValue(parseIntInputValue(props.product.stock), validators.nonNegativeNumber),
   categoryIds: [],
-  is_active: true,
+  is_active: Boolean(props.product.is_active),
 });
 
 const form = ref(initialFormState());
@@ -86,7 +106,9 @@ function validateForm(): boolean {
 async function submit() {
   const validated = validateForm();
   if (!validated) return;
+
   const productData = {
+    id: props.product.id,
     name: form.value.name.text,
     reference: form.value.reference.text,
     brand: form.value.brand.text,
@@ -97,11 +119,11 @@ async function submit() {
     category_ids: form.value.categoryIds,
     is_active: form.value.is_active,
   };
-  const success = await useCreateProduct(productData);
+
+  const success = await useUpdateProduct(productData);
 
   if (success) {
-    emit('created');
-    cancelModal();
+    emit('updated');
   }
 }
 </script>

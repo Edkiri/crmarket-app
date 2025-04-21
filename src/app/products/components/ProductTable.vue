@@ -10,6 +10,16 @@
         </span>
       </div>
     </template>
+
+    <template #item-name="{ item }">
+      <button
+        @click="$emit('select', item as Product)"
+        class="cursor-pointer hover:text-blue-400 hover:underline"
+        type="button"
+      >
+        {{ item.name }}
+      </button>
+    </template>
   </BaseTable>
 </template>
 
@@ -22,6 +32,11 @@ interface ProductTableInterface {
   products: Product[];
 }
 
+defineProps<ProductTableInterface>();
+defineEmits<{
+  (e: 'select', product: Product): void;
+}>();
+
 const headers = ref<TableHeader[]>([
   { text: 'Nombre', itemKey: 'name' },
   { text: 'Referencia', itemKey: 'reference' },
@@ -29,6 +44,4 @@ const headers = ref<TableHeader[]>([
   { text: 'Stock', itemKey: 'stock', width: 80 },
   { text: 'Precio', itemKey: 'sale_price', width: 100 },
 ]);
-
-defineProps<ProductTableInterface>();
 </script>

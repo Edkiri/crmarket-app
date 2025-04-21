@@ -17,9 +17,22 @@ export interface ProductCreateForm {
   name: string;
   reference: string;
   is_active: boolean;
-  stock?: number;
-  cost_price?: number;
-  sale_price?: number;
+  stock?: number | null;
+  cost_price?: number | null;
+  sale_price?: number | null;
+  brand?: string | null;
+  description?: string;
+  category_ids?: number[];
+}
+
+export interface ProductUpdateForm {
+  id: number;
+  name?: string;
+  reference?: string;
+  is_active?: boolean;
+  stock?: number | null;
+  cost_price?: number | null;
+  sale_price?: number | null;
   brand?: string;
   description?: string;
   category_ids?: number[];
