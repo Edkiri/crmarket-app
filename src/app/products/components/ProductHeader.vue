@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between gap-4">
-    <form class="flex w-full" @submit.prevent="$emit('openCreateModal')">
+    <form class="flex w-full" @submit.prevent="$emit('search')">
       <div class="grow">
         <input
           class="w-full text-[14px] text-gray-400 focus:border-blue-500 outline-none h-8 px-3 py-[5px] border border-gray-700 rounded-l-md focus:inset-shadow-blue-inner"
@@ -22,7 +22,9 @@
     <BaseButton
       @click="$emit('openCreateModal')"
       label="Nuevo"
-      custom-classes="bg-[#055d20] px-[12px] border-[1px] border-[#013d14] hover:bg-[#087f3e]"
+      type="button"
+      icon="Inventory"
+      custom-classes="text-neutral-200 bg-[#055d20] border-[1px] border-[#013d14] hover:bg-[#087f3e]"
     />
   </div>
 </template>

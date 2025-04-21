@@ -1,7 +1,7 @@
 <template>
   <BaseModal @close="cancelModal()">
     <div class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
-      <h2 class="text-lg text-neutral-800 font-semibold mb-4">Actualizar Producto</h2>
+      <h2 class="text-lg text-neutral-800 font-semibold mb-4">{{ product.name }}</h2>
 
       <FormInput :input-values="form.name" label="Nombre" />
       <FormInput :input-values="form.description" label="Descripción" />
@@ -20,18 +20,17 @@
       <Checkbox v-model="form.is_active" label="¿Está activo?" />
 
       <div class="flex justify-end gap-2 mt-4">
-        <button
-          @click="cancelModal"
-          class="px-4 py-2 bg-neutral-300 rounded hover:bg-neutral-400 cursor-pointer transition-colors"
-        >
-          Cancelar
-        </button>
-        <button
+        <BaseButton
+          custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
+          label="Cancelar"
+          @click="cancelModal()"
+        />
+        <BaseButton
           @click="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer transition-colors"
-        >
-          Guardar
-        </button>
+          custom-classes="bg-blue-600 text-white hover:bg-blue-700"
+          label="Guardar"
+          icon="Save"
+        />
       </div>
     </div>
   </BaseModal>
@@ -46,6 +45,8 @@ import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
 import { Product } from '../types';
 import useUpdateProduct from '../composables/useUpdateProduct';
+import { parseIntInputValue } from '@/utils';
+import BaseButton from '@/ui/buttons/BaseButton.vue';
 
 interface Props {
   product: Product;
@@ -54,13 +55,6 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits(['close', 'updated']);
-
-function parseIntInputValue(value: number | null | undefined): string {
-  if (value || value === 0) {
-    return String(value);
-  }
-  return '';
-}
 
 const initialFormState = () => ({
   name: useInputValue(props.product.name, validators.notEmpty),

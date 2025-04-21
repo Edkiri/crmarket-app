@@ -1,18 +1,19 @@
 <template>
-  <component :is="DynamicIcon" v-if="!loadError" :class="customClasses" :style="iconStyle" />
+  <component :is="DynamicIcon" v-if="!loadError" :class="customClasses" />
 </template>
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from 'vue';
 
+export type AvailableIcons = 'Inventory' | 'Search' | 'Save';
+
 interface SvgIconProps {
-  name: 'Inventory' | 'Search';
+  name: AvailableIcons;
   size?: string;
   customClasses?: string;
 }
 
 const props = withDefaults(defineProps<SvgIconProps>(), {
-  size: '20px',
   customClasses: '',
 });
 
@@ -30,12 +31,5 @@ const DynamicIcon = computed(() => {
       });
     },
   });
-});
-
-const iconStyle = computed(() => {
-  return {
-    width: props.size,
-    height: props.size,
-  };
 });
 </script>

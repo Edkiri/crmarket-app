@@ -20,18 +20,17 @@
       <Checkbox v-model="form.is_active" label="¿Está activo?" />
 
       <div class="flex justify-end gap-2 mt-4">
-        <button
+        <BaseButton
+          custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
+          label="Cancelar"
           @click="cancelModal"
-          class="px-4 py-2 bg-neutral-300 rounded hover:bg-neutral-400 cursor-pointer transition-colors"
-        >
-          Cancelar
-        </button>
-        <button
+        />
+        <BaseButton
           @click="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer transition-colors"
-        >
-          Guardar
-        </button>
+          custom-classes="bg-blue-600 text-white hover:bg-blue-700"
+          label="Guardar"
+          icon="Save"
+        />
       </div>
     </div>
   </BaseModal>
@@ -45,6 +44,7 @@ import { ref, onBeforeUnmount } from 'vue';
 import useCreateProduct from '../composables/useCreateProduct';
 import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
+import BaseButton from '@/ui/buttons/BaseButton.vue';
 
 const emit = defineEmits(['close', 'created']);
 
