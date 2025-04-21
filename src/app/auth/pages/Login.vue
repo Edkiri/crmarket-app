@@ -60,7 +60,7 @@ async function handleSubmit(): Promise<void> {
   });
 
   if (success) {
-    router.push('/dashboard');
+    router.push('/inventory');
   }
 }
 </script>

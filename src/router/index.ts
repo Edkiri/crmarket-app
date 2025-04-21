@@ -12,8 +12,8 @@ const routes = [
     component: Login,
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
+    path: '/inventory',
+    name: 'Inventory',
     component: Products,
   },
   {

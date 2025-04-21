@@ -1,20 +1,27 @@
 import { useAuthStore } from '@/app/auth/store/auth-store';
 import type { AuthStoreType } from '@/app/auth/store/auth-store';
+import {
+  CategoriesStoreType,
+  useCategoriesStore,
+} from '@/app/categories/stores/useCategoriesStore';
 import { ProductsStoreType, useProductsStore } from '@/app/products/stores/products-store';
 
-type StoreKey = 'auth' | 'products';
+type StoreKey = 'auth' | 'products' | 'categories';
 
-type StoreMap = {
+type AvailableStores = {
   auth: AuthStoreType;
   products: ProductsStoreType;
+  categories: CategoriesStoreType;
 };
 
-export default function useStore<K extends StoreKey>(storeKey: K): StoreMap[K] {
+export default function useStore<K extends StoreKey>(storeKey: K): AvailableStores[K] {
   switch (storeKey) {
     case 'auth':
-      return useAuthStore() as StoreMap[K];
+      return useAuthStore() as AvailableStores[K];
     case 'products':
-      return useProductsStore() as StoreMap[K];
+      return useProductsStore() as AvailableStores[K];
+    case 'categories':
+      return useCategoriesStore() as AvailableStores[K];
     default:
       throw new Error(`Store key "${storeKey}" is not recognized`);
   }

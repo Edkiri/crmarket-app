@@ -4,17 +4,18 @@ import { useInputValue } from '@/composables/use-input-value';
 import FormInput from '@/ui/inputs/FormInput.vue';
 import validators from '@/utils/input-validators';
 import { ref, onBeforeUnmount } from 'vue';
+import useCreateProduct from '../composables/useCreateProduct';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'created']);
 
-// Estado inicial del formulario
 const initialFormState = () => ({
   name: useInputValue('', validators.notEmpty),
   reference: useInputValue('', validators.notEmpty),
   brand: useInputValue(''),
   description: useInputValue(''),
-  cost_price: useInputValue('', [validators.notEmpty, validators.nonNegativeNumber]),
-  sale_price: useInputValue('', [validators.notEmpty, validators.nonNegativeNumber]),
+  cost_price: useInputValue('', validators.nonNegativeNumber),
+  sale_price: useInputValue('', validators.nonNegativeNumber),
+  stock: useInputValue('', validators.nonNegativeNumber),
   categoryIds: [],
   is_active: true,
 });
@@ -56,10 +57,9 @@ function validateForm(): boolean {
   return nameIsValid && referenceIsValid && costPriceIsValid && salePriceIsValid;
 }
 
-function submit() {
+async function submit() {
   const validated = validateForm();
   if (!validated) return;
-  // Crear objeto con los datos para enviar
   const productData = {
     name: form.value.name.text,
     reference: form.value.reference.text,
@@ -67,17 +67,17 @@ function submit() {
     description: form.value.description.text,
     cost_price: form.value.cost_price.text ? parseFloat(form.value.cost_price.text) : 0,
     sale_price: form.value.sale_price.text ? parseFloat(form.value.sale_price.text) : 0,
-    categoryIds: form.value.categoryIds,
+    stock: form.value.stock.text ? parseFloat(form.value.stock.text) : 0,
+    category_ids: form.value.categoryIds,
     is_active: form.value.is_active,
   };
+  const success = await useCreateProduct(productData);
 
-  console.log('Producto a guardar:', productData);
+  if (success) {
+    closeModal();
+    emit('created');
+  }
 
-  // Aquí iría el código para guardar el producto en la API
-  // await saveProduct(productData);
-
-  // Cerrar el modal después de guardar exitosamente
-  closeModal();
 }
 </script>
 
@@ -91,36 +91,44 @@ function submit() {
     leave-to-class="opacity-0"
   >
     <div v-if="isOpen" class="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div ref="modalRef" class="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+      <div ref="modalRef" class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
         <h2 class="text-lg font-semibold mb-4">Crear Producto</h2>
+        
         <FormInput :input-values="form.name" label="Nombre" />
-        <FormInput :input-values="form.reference" label="Referencia" />
-        <FormInput :input-values="form.brand" label="Marca" />
         <FormInput :input-values="form.description" label="Descripción" />
-        <FormInput :input-values="form.cost_price" label="Precio Costo" />
-        <FormInput :input-values="form.sale_price" label="Precio Venta" type="number" />
+
+        <div class="w-full flex gap-4 items-center">
+          <FormInput :input-values="form.reference" label="Referencia" />
+          <FormInput :input-values="form.brand" label="Marca" />
+        </div>
+        
+        <div class="w-full flex gap-4 items-center">
+          <FormInput :input-values="form.cost_price" label="Precio Costo" />
+          <FormInput :input-values="form.sale_price" label="Precio Venta" />
+          <FormInput :input-values="form.stock" label="Stock" />
+        </div>
 
         <!-- Checkbox para is_active -->
-        <div class="flex items-center mt-4 mb-4">
+        <div class="flex items-center mt-2 mb-2">
           <input
             id="is-active"
             v-model="form.is_active"
             type="checkbox"
             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label for="is-active" class="ml-2 text-sm text-gray-700">Producto activo</label>
+          <label for="is-active" class="ml-2 text-sm text-gray-700">Activo</label>
         </div>
 
         <div class="flex justify-end gap-2 mt-4">
           <button
             @click="cancelModal"
-            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition-colors"
+            class="px-4 py-2 bg-neutral-300 rounded hover:bg-neutral-400 cursor-pointer transition-colors"
           >
             Cancelar
           </button>
           <button
             @click="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer transition-colors"
           >
             Guardar
           </button>

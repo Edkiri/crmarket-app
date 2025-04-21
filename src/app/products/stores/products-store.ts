@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { Product, ProductQueryInterface } from '../types';
+import { Product, ProductQuery } from '../types';
 
 export type ProductsStoreType = ReturnType<typeof useProductsStore>;
 
@@ -8,7 +8,7 @@ export const useProductsStore = defineStore(
   'products',
   () => {
     const products = ref<Product[]>([]);
-    const query = ref<ProductQueryInterface>({
+    const query = ref<ProductQuery>({
       name: '',
     });
 

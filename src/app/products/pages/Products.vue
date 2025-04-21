@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between gap-4">
-    <form class="flex w-full" @submit.prevent="handleSearch">
+    <form class="flex w-full" @submit.prevent="search()">
       <div class="grow">
         <input
           class="w-full text-[14px] text-gray-400 focus:border-blue-500 outline-none h-8 px-3 py-[5px] border border-gray-700 rounded-l-md focus:inset-shadow-blue-inner"
@@ -19,7 +19,7 @@
     </form>
 
     <button
-      class="flex gap-2 items-center bg-[#055d20] px-[12px] border-[1px] border-[#013d14] rounded-md h-[32px]"
+      class="cursor-pointer flex gap-2 items-center bg-[#055d20] px-[12px] border-[1px] border-[#013d14] rounded-md h-[32px]"
       @click="showCreateModal = true"
     >
       <Inventory class="w-[20px] h-[20px] fill-neutral-200" />
@@ -28,7 +28,7 @@
   </div>
 
   <ProductTable :products="products" />
-  <ProductCreateModal v-if="showCreateModal" @close="showCreateModal = false" />
+  <ProductCreateModal v-if="showCreateModal" @close="showCreateModal = false" @created="search()" />
 </template>
 
 <script setup lang="ts">
@@ -42,11 +42,16 @@ import ProductTable from '../components/ProductTable.vue';
 import ProductCreateModal from '../components/ProductCreateModal.vue';
 
 const { products, query } = storeToRefs(useStore('products'));
-onMounted(handleSearch);
+const categoriesStore = useStore('categories');
+
+onMounted(() => {
+  search();
+  categoriesStore.fetchCategories();
+});
 
 const showCreateModal = ref(false);
 
-async function handleSearch() {
+async function search() {
   products.value = await useQueryProducts(query.value);
 }
 </script>
