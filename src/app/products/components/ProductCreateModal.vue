@@ -4,9 +4,15 @@
       <h2 class="text-lg text-neutral-800 font-semibold mb-4">Crear Producto</h2>
 
       <FormInput :input-values="form.name" label="Nombre" />
+
       <FormInput :input-values="form.description" label="Descripción" />
 
-      <div class="w-full flex gap-4 items-center">
+      <div class="flex flex-col gap-1 mt-2">
+        <span class="text-md text-neutral-700 font-semibold">Categorías</span>
+        <CategorySelect v-model:selected="form.categories" />
+      </div>
+
+      <div class="w-full flex gap-4 items-center mt-4">
         <FormInput :input-values="form.reference" label="Referencia" />
         <FormInput :input-values="form.brand" label="Marca" />
       </div>
@@ -17,7 +23,7 @@
         <FormInput :input-values="form.stock" label="Stock" />
       </div>
 
-      <Checkbox v-model="form.is_active" label="¿Está activo?" />
+      <Checkbox class="mt-8" v-model="form.is_active" label="¿Está activo?" />
 
       <div class="flex justify-end gap-2 mt-4">
         <BaseButton
@@ -45,6 +51,8 @@ import useCreateProduct from '../composables/useCreateProduct';
 import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
+import { Category } from '@/app/categories/types';
+import CategorySelect from '@/app/categories/components/CategorySelect.vue';
 
 const emit = defineEmits(['close', 'created']);
 
@@ -56,7 +64,7 @@ const initialFormState = () => ({
   cost_price: useInputValue('', validators.nonNegativeNumber),
   sale_price: useInputValue('', validators.nonNegativeNumber),
   stock: useInputValue('', validators.nonNegativeNumber),
-  categoryIds: [],
+  categories: [],
   is_active: true,
 });
 
@@ -94,7 +102,7 @@ async function submit() {
     cost_price: form.value.cost_price.text ? parseFloat(form.value.cost_price.text) : null,
     sale_price: form.value.sale_price.text ? parseFloat(form.value.sale_price.text) : null,
     stock: form.value.stock.text ? parseFloat(form.value.stock.text) : null,
-    category_ids: form.value.categoryIds,
+    category_ids: form.value.categories.map((item: Category) => item.id),
     is_active: form.value.is_active,
   };
   const success = await useCreateProduct(productData);

@@ -6,6 +6,11 @@
       <FormInput :input-values="form.name" label="Nombre" />
       <FormInput :input-values="form.description" label="Descripción" />
 
+      <div class="flex flex-col gap-1 mt-2">
+        <span class="text-md text-neutral-700 font-semibold">Categorías</span>
+        <CategorySelect v-model:selected="form.categories" />
+      </div>
+
       <div class="w-full flex gap-4 items-center">
         <FormInput :input-values="form.reference" label="Referencia" />
         <FormInput :input-values="form.brand" label="Marca" />
@@ -17,7 +22,7 @@
         <FormInput :input-values="form.stock" label="Stock" />
       </div>
 
-      <Checkbox v-model="form.is_active" label="¿Está activo?" />
+      <Checkbox v-model="form.is_active" label="¿Está activo?" class="mt-8" />
 
       <div class="flex items-center justify-between mt-8">
         <BaseButton
@@ -65,6 +70,7 @@ import { parseIntInputValue } from '@/utils';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
 import DeleteModal from '@/ui/modals/DeleteModal.vue';
 import useDeleteProduct from '../composables/useDeleteProuduct';
+import CategorySelect from '@/app/categories/components/CategorySelect.vue';
 
 interface Props {
   product: Product;
@@ -90,7 +96,7 @@ const initialFormState = () => ({
     validators.nonNegativeNumber
   ),
   stock: useInputValue(parseIntInputValue(props.product.stock), validators.nonNegativeNumber),
-  categoryIds: [],
+  categories: props.product.categories,
   is_active: Boolean(props.product.is_active),
 });
 
@@ -130,7 +136,7 @@ async function submit() {
     cost_price: form.value.cost_price.text ? parseFloat(form.value.cost_price.text) : null,
     sale_price: form.value.sale_price.text ? parseFloat(form.value.sale_price.text) : null,
     stock: form.value.stock.text ? parseFloat(form.value.stock.text) : null,
-    category_ids: form.value.categoryIds,
+    category_ids: form.value.categories.map(item => item.id),
     is_active: form.value.is_active,
   };
 

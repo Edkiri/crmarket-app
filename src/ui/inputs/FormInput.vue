@@ -59,4 +59,8 @@ function handleFocus() {
 function handleFocusOut() {
   localInputValues.value.validate();
 }
+
+defineExpose({
+  focus: () => input.value?.focus(),
+});
 </script>
