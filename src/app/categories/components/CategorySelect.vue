@@ -1,6 +1,5 @@
 <template>
   <div ref="categorySelectContainer" class="relative">
-    <!-- Botón que alterna la visibilidad -->
     <button
       @click="handleOpen()"
       class="relative cursor-pointer w-full text-[14px] text-neutral-700 focus:border-blue-500 outline-none h-8 border border-gray-700 rounded-md"
@@ -34,7 +33,6 @@
       />
     </button>
 
-    <!-- Transición Vue con clases Tailwind -->
     <transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="transform -translate-y-2 opacity-0"
@@ -43,7 +41,6 @@
       leave-from-class="transform translate-y-0 opacity-100"
       leave-to-class="transform -translate-y-2 opacity-0"
     >
-      <!-- Sólo se renderiza cuando open === true -->
       <div
         v-if="open"
         class="px-4 pb-4 absolute left-0 right-0 top-10 border border-neutral-700 rounded-md bg-white shadow-lg z-100"
