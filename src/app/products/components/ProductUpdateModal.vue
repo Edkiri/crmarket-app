@@ -19,20 +19,36 @@
 
       <Checkbox v-model="form.is_active" label="¿Está activo?" />
 
-      <div class="flex justify-end gap-2 mt-4">
+      <div class="flex items-center justify-between mt-8">
         <BaseButton
-          custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
-          label="Cancelar"
-          @click="cancelModal()"
+          custom-classes="bg-red-400 hover:bg-red-600 border border-ref-600 text-neutral-200 font-semibold"
+          @click="confirming = true"
+          label="Eliminar"
+          icon="Delete"
+          icon-clases="w-[18px] h-[18px] fill-neutral-200"
         />
-        <BaseButton
-          @click="submit"
-          custom-classes="bg-blue-600 text-white hover:bg-blue-700"
-          label="Guardar"
-          icon="Save"
-        />
+        <div class="flex justify-end gap-2 mt-4">
+          <BaseButton
+            custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
+            label="Cancelar"
+            @click="cancelModal()"
+          />
+          <BaseButton
+            @click="submit"
+            custom-classes="bg-blue-600 text-white hover:bg-blue-700"
+            label="Guardar"
+            icon="Save"
+          />
+        </div>
       </div>
     </div>
+
+    <DeleteModal
+      v-if="confirming"
+      message="Confirma para eliminar el producto"
+      @cancel="confirming = false"
+      @comfirm="deleteProduct()"
+    />
   </BaseModal>
 </template>
 
@@ -47,6 +63,8 @@ import { Product } from '../types';
 import useUpdateProduct from '../composables/useUpdateProduct';
 import { parseIntInputValue } from '@/utils';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
+import DeleteModal from '@/ui/modals/DeleteModal.vue';
+import useDeleteProduct from '../composables/useDeleteProuduct';
 
 interface Props {
   product: Product;
@@ -54,7 +72,9 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits(['close', 'updated']);
+const emit = defineEmits(['close', 'update', 'delete']);
+
+const confirming = ref(false);
 
 const initialFormState = () => ({
   name: useInputValue(props.product.name, validators.notEmpty),
@@ -117,7 +137,16 @@ async function submit() {
   const success = await useUpdateProduct(productData);
 
   if (success) {
-    emit('updated');
+    emit('update');
+  }
+}
+
+async function deleteProduct() {
+  confirming.value = false;
+  const success = await useDeleteProduct(props.product);
+
+  if (success) {
+    emit('delete');
   }
 }
 </script>

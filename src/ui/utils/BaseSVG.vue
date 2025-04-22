@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from 'vue';
 
-export type AvailableIcons = 'Inventory' | 'Search' | 'Save';
+export type AvailableIcons = 'Inventory' | 'Search' | 'Save' | 'Delete';
 
 interface SvgIconProps {
   name: AvailableIcons;

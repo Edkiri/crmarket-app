@@ -8,7 +8,8 @@
   <ProductUpdateModal
     v-if="showUpdateModal && selectedProduct"
     @close="closeUpdateModal()"
-    @updated="handleUpdated"
+    @update="handleUpdated()"
+    @delete="handleDelete()"
     :product="selectedProduct"
   />
 </template>
@@ -24,11 +25,20 @@ import ProductHeader from '@/app/products/components/ProductHeader.vue';
 import ProductUpdateModal from '@/app/products/components/ProductUpdateModal.vue';
 import { Product } from '../types';
 
+const { products, query, selectedProduct } = storeToRefs(useStore('products'));
 const showCreateModal = ref(false);
 const showUpdateModal = ref(false);
-const { products, query, selectedProduct } = storeToRefs(useStore('products'));
+
 const categoriesStore = useStore('categories');
 
+onMounted(() => {
+  search();
+  categoriesStore.fetchCategories();
+});
+
+async function search() {
+  products.value = await useQueryProducts(query.value);
+}
 function handleSelectProduct(product: Product) {
   selectedProduct.value = product;
   showUpdateModal.value = true;
@@ -44,12 +54,8 @@ function handleUpdated() {
   search();
 }
 
-onMounted(() => {
+function handleDelete() {
+  closeUpdateModal();
   search();
-  categoriesStore.fetchCategories();
-});
-
-async function search() {
-  products.value = await useQueryProducts(query.value);
 }
 </script>
