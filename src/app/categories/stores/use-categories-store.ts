@@ -7,9 +7,9 @@ export type CategoriesStoreType = ReturnType<typeof useCategoriesStore>;
 
 export const useCategoriesStore = defineStore('categories', () => {
   const categories = ref<Category[]>([]);
+  const { fetchApi, status: statusCategories, loading } = useAxios();
 
   async function fetchCategories(): Promise<void> {
-    const { fetchApi } = useAxios();
     const response = await fetchApi<{ data: Category[] }>({ path: 'categories' });
 
     if (response?.status === 200) {
@@ -17,5 +17,5 @@ export const useCategoriesStore = defineStore('categories', () => {
     }
   }
 
-  return { categories, fetchCategories };
+  return { categories, fetchCategories, statusCategories, loading };
 });

@@ -29,7 +29,7 @@ defineEmits(['click']);
 
 const buttonClasses = computed(() => {
   return [
-    'h-[32px] flex gap-2 items-center rounded-md transition-colors duration-200 px-[12px]',
+    'flex py-1 gap-2 items-center rounded-md transition-colors duration-200 px-[12px]',
     props.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
     props.customClasses,
   ].join(' ');

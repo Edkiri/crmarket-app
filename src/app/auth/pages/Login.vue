@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit" class="max-w-[450px] w-full m-auto p-4 mt-8">
     <div class="flex flex-col">
-      <h1 class="text-black dark:text-white font-bold text-center text-2xl">Inicio de sesión</h1>
+      <h1 class="text-black font-bold text-center text-2xl">Inicio de sesión</h1>
     </div>
 
     <div class="flex flex-col">
@@ -14,11 +14,11 @@
       />
       <button
         type="submit"
-        class="text-white font-bold dark:text-white text-lg self-start bg-rose-500 hover:bg-rose-600 py-1 rounded-sm w-full"
+        class="text-white mt-4 font-bold text-lg self-start bg-rose-500 hover:bg-rose-600 py-1 rounded-sm w-full"
       >
         Iniciar sesión
       </button>
-      <p class="text-red-600 dark:text-red-400">{{ error }}</p>
+      <p v-if="error" class="text-red-600 mt-4">Correo o contraseña incorrecto</p>
     </div>
   </form>
 </template>
@@ -53,6 +53,7 @@ function validateForm(): boolean {
 async function handleSubmit(): Promise<void> {
   const validated = validateForm();
   if (!validated || loading.value) return;
+
   const success = await login({
     email: formData.email.text,
     password: formData.password.text,

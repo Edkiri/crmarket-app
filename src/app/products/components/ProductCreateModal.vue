@@ -1,5 +1,5 @@
 <template>
-  <BaseModal @close="cancelModal()">
+  <BaseModal ref="modalRef" @close="cancelModal()">
     <div class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
       <h2 class="text-lg text-neutral-800 font-semibold mb-4">Crear Producto</h2>
 
@@ -29,13 +29,14 @@
         <BaseButton
           custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
           label="Cancelar"
-          @click="cancelModal"
+          @click="modalRef?.close()"
         />
         <BaseButton
           @click="submit"
           custom-classes="bg-blue-600 text-white hover:bg-blue-700"
           label="Guardar"
           icon="Save"
+          :disabled="loadingCreate"
         />
       </div>
     </div>
@@ -47,12 +48,15 @@ import { useInputValue } from '@/composables/use-input-value';
 import FormInput from '@/ui/inputs/FormInput.vue';
 import validators from '@/utils/input-validators';
 import { ref, onBeforeUnmount } from 'vue';
-import useCreateProduct from '../composables/useCreateProduct';
+import useCreateProduct from '../composables/use-create-product';
 import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
 import { Category } from '@/app/categories/types';
 import CategorySelect from '@/app/categories/components/CategorySelect.vue';
+
+const { create, loadingCreate, statusCreate } = useCreateProduct();
+const modalRef = ref<InstanceType<typeof BaseModal> | null>(null);
 
 const emit = defineEmits(['close', 'created']);
 
@@ -105,11 +109,11 @@ async function submit() {
     category_ids: form.value.categories.map((item: Category) => item.id),
     is_active: form.value.is_active,
   };
-  const success = await useCreateProduct(productData);
+  await create(productData);
 
-  if (success) {
+  if (statusCreate.value === 201) {
+    modalRef.value?.close();
     emit('created');
-    cancelModal();
   }
 }
 </script>

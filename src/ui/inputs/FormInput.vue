@@ -12,6 +12,7 @@
         @input="localInputValues.text = ($event.target as HTMLInputElement).value"
         @focus="handleFocus"
         @focusout="handleFocusOut"
+        @keydown.enter="$emit('enter')"
       />
     </div>
     <span class="absolute bottom-0 right-0 left-0 block text-[12px] text-red-500">{{
@@ -39,7 +40,7 @@ const props = withDefaults(defineProps<InputProps>(), {
   type: 'text',
 });
 
-const emit = defineEmits(['update:inputValues']);
+const emit = defineEmits(['update:inputValues', 'enter']);
 const localInputValues = ref<InputValues>(props.inputValues);
 
 watch(

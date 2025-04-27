@@ -1,5 +1,5 @@
 <template>
-  <BaseModal @close="cancelModal()">
+  <BaseModal ref="modalRef" @close="cancelModal()">
     <div class="bg-white p-6 rounded-lg shadow-lg w-[800px]">
       <h2 class="text-lg text-neutral-800 font-semibold mb-4">{{ product.name }}</h2>
 
@@ -11,7 +11,7 @@
         <CategorySelect v-model:selected="form.categories" />
       </div>
 
-      <div class="w-full flex gap-4 items-center">
+      <div class="w-full flex gap-4 items-center mt-4">
         <FormInput :input-values="form.reference" label="Referencia" />
         <FormInput :input-values="form.brand" label="Marca" />
       </div>
@@ -36,13 +36,14 @@
           <BaseButton
             custom-classes="bg-neutral-300 hover:bg-neutral-400 text-neutral-700"
             label="Cancelar"
-            @click="cancelModal()"
+            @click="modalRef?.close()"
           />
           <BaseButton
             @click="submit"
             custom-classes="bg-blue-600 text-white hover:bg-blue-700"
             label="Guardar"
             icon="Save"
+            :disabled="loadingDelete || loadingUpdate"
           />
         </div>
       </div>
@@ -52,7 +53,8 @@
       v-if="confirming"
       message="Confirma para eliminar el producto"
       @cancel="confirming = false"
-      @comfirm="deleteProduct()"
+      @comfirm="handleDeleteProduct"
+      :disable="loadingDelete || loadingUpdate"
     />
   </BaseModal>
 </template>
@@ -65,22 +67,26 @@ import { ref, onBeforeUnmount } from 'vue';
 import BaseModal from '@/ui/modals/BaseModal.vue';
 import Checkbox from '@/ui/inputs/Checkbox.vue';
 import { Product } from '../types';
-import useUpdateProduct from '../composables/useUpdateProduct';
+import useUpdateProduct from '../composables/use-update-product';
 import { parseIntInputValue } from '@/utils';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
 import DeleteModal from '@/ui/modals/DeleteModal.vue';
-import useDeleteProduct from '../composables/useDeleteProuduct';
+import useDeleteProduct from '../composables/use-delete-prouduct';
 import CategorySelect from '@/app/categories/components/CategorySelect.vue';
 
 interface Props {
   product: Product;
 }
 
+const modalRef = ref<InstanceType<typeof BaseModal> | null>(null);
+
 const props = defineProps<Props>();
 
 const emit = defineEmits(['close', 'update', 'delete']);
 
 const confirming = ref(false);
+const { update, loadingUpdate, stausUpdate } = useUpdateProduct();
+const { deleteProduct, loadingDelete, statusDelete } = useDeleteProduct();
 
 const initialFormState = () => ({
   name: useInputValue(props.product.name, validators.notEmpty),
@@ -124,6 +130,8 @@ function validateForm(): boolean {
 }
 
 async function submit() {
+  if (loadingUpdate.value) return;
+
   const validated = validateForm();
   if (!validated) return;
 
@@ -140,18 +148,20 @@ async function submit() {
     is_active: form.value.is_active,
   };
 
-  const success = await useUpdateProduct(productData);
+  await update(productData);
 
-  if (success) {
+  if (stausUpdate.value === 200) {
+    modalRef.value?.close();
     emit('update');
   }
 }
 
-async function deleteProduct() {
+async function handleDeleteProduct() {
   confirming.value = false;
-  const success = await useDeleteProduct(props.product);
+  await deleteProduct(props.product);
 
-  if (success) {
+  if (statusDelete.value === 200) {
+    modalRef.value?.close();
     emit('delete');
   }
 }

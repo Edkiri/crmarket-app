@@ -1,9 +1,9 @@
 <template>
-  <BaseTable class="mt-8" :headers="headers" :items="products">
+  <BaseTable :headers="headers" :items="products">
     <template #item-categories="{ item }">
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 overflow-x-scroll max-w-[400px] h-8">
         <span
-          class="text-sm rounded-md p-[1px] px-2 bg-neutral-300"
+          class="block text-xs rounded-md px-1 bg-neutral-300 min-w-max"
           v-for="category in item.categories"
         >
           {{ category.name }}
@@ -11,10 +11,16 @@
       </div>
     </template>
 
+    <template #item-reference="{ item }">
+      <span class="block min-w-max">
+        {{ item.reference }}
+      </span>
+    </template>
+
     <template #item-name="{ item }">
       <button
         @click="$emit('select', item as Product)"
-        class="cursor-pointer hover:text-blue-400 hover:underline"
+        class="cursor-pointer hover:text-blue-400 hover:underline min-w-max"
         type="button"
       >
         {{ item.name }}
@@ -42,6 +48,6 @@ const headers = ref<TableHeader[]>([
   { text: 'Referencia', itemKey: 'reference' },
   { text: 'Categorías', itemKey: 'categories' },
   { text: 'Stock', itemKey: 'stock', width: 80 },
-  { text: 'Precio', itemKey: 'sale_price', width: 100 },
+  { text: 'Precio', itemKey: 'sale_price', width: 120 },
 ]);
 </script>

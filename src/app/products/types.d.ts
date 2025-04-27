@@ -39,7 +39,7 @@ export interface ProductUpdateForm {
 }
 
 export interface ProductQuery {
-  page?: number;
+  page: number;
   reference?: string;
   name?: string;
   brand?: string;

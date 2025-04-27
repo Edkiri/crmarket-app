@@ -1,13 +1,18 @@
 <template>
-  <div ref="categorySelectContainer" class="relative">
+  <div ref="categorySelectContainer" class="relative h-full">
     <button
       @click="handleOpen()"
-      class="relative cursor-pointer w-full text-[14px] text-neutral-700 focus:border-blue-500 outline-none h-8 border border-gray-700 rounded-md"
+      type="button"
+      class="relative cursor-pointer w-full text-[14px] overflow-x-hidden text-neutral-700 focus:border-blue-500 outline-none h-10 border border-gray-700 rounded-md"
     >
-      <div class="flex items-center gap-2 px-2">
+      <p v-if="!currentCategories.length" class="h-full flex items-center pl-2 text-neutral-400">
+        Categorías...
+      </p>
+      <div v-else class="flex items-center gap-2 px-2 h-full overflow-x-scroll mr-8">
         <button
           @click.stop=""
-          class="text-sm rounded-md p-[1px] px-2 bg-neutral-300 flex items-center gap-[4x]"
+          type="button"
+          class="text-sm rounded-md p-[1px] px-2 bg-neutral-300 flex items-center gap-[4x] min-w-fit"
           v-for="category in currentCategories"
         >
           <span class="inline-block">{{ category.name }}</span>
@@ -43,21 +48,22 @@
     >
       <div
         v-if="open"
-        class="px-4 pb-4 absolute left-0 right-0 top-10 border border-neutral-700 rounded-md bg-white shadow-lg z-100"
+        class="px-4 pb-4 absolute left-0 right-0 top-10 border border-neutral-700 rounded-md bg-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.5)] z-100"
       >
         <div class="py-2">
           <FormInput
             ref="searchInput"
             :input-values="searchCategoryName"
-            placeholder="Buscar categorias..."
+            placeholder="Buscar categorías..."
+            @enter="handleSearchKeydownEnter"
           />
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <button
             type="button"
-            :disabled="currentCategories.some(item => item.id === category.id)"
-            class="text-sm rounded-md p-[1px] px-2"
-            :class="`${currentCategories.some(item => item.id === category.id) ? 'bg-neutral-400' : 'cursor-pointer bg-neutral-200 hover:bg-neutral-300'}`"
+            :disabled="currentCategories.some((item: Category) => item.id === category.id)"
+            class="text-sm rounded-md p-[1px] px-2 min-w-fit"
+            :class="`${currentCategories.some((item: Category) => item.id === category.id) ? 'bg-neutral-400' : 'cursor-pointer bg-neutral-200 hover:bg-neutral-300'}`"
             @click="addCategory(category)"
             v-for="category in filteredCategories"
           >
@@ -92,7 +98,7 @@ const categorySelectContainer = ref<HTMLElement | null>(null);
 
 const open = ref(false);
 const searchCategoryName = useInputValue('');
-const currentCategories = ref<Category[]>(props.selected);
+const currentCategories = ref<Category[]>([...props.selected]);
 
 const filteredCategories = computed(() => {
   const search = (searchCategoryName.text as Ref<string>).value.trim().toLowerCase();
@@ -129,4 +135,10 @@ async function handleOpen() {
 useClickOutside(categorySelectContainer, () => {
   open.value = false;
 });
+
+function handleSearchKeydownEnter() {
+  if (filteredCategories.value.length === 1) {
+    addCategory(filteredCategories.value[0]);
+  }
+}
 </script>

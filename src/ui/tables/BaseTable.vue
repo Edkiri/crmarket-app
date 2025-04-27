@@ -13,7 +13,7 @@
           }"
         >
           <slot :item="header" :name="`header-${header.itemKey}`">
-            <span class="text-md text-neutral-800 font-semibold">
+            <span class="text-md text-neutral-700 font-semibold">
               {{ header.text }}
             </span>
           </slot>
@@ -23,9 +23,9 @@
     <tbody>
       <template v-if="items.length === 0">
         <tr>
-          <td :colspan="headers.length" class="py-2 px-3 text-center bg-neutral-300 rounded-b-lg">
+          <td :colspan="headers.length" class="py-2 px-3 text-center bg-neutral-200 rounded-b-lg">
             <slot name="empty">
-              <span class="text-black dark:text-white font-xl font-semibold my-2"> Vacía </span>
+              <span class="text-neutral-600 font-md font-semibold my-2"> Sin resultados </span>
             </slot>
           </td>
         </tr>
@@ -43,7 +43,7 @@
             :key="`header-${header_index}`"
           >
             <slot :name="`item-${header.itemKey}`" :item="item">
-              <span class="text-black">
+              <span class="text-neutral-700">
                 {{ getItemValue(header, item) }}
               </span>
             </slot>
@@ -53,19 +53,23 @@
     </tbody>
   </table>
 </template>
+
 <script lang="ts" setup>
 export type TableHeader = {
   itemKey: string;
   text: string;
   width?: number;
 };
+
 export type TableItem = {
   [key: string]: any;
 };
+
 export interface TableProps {
   headers: TableHeader[];
   items: TableItem[];
 }
+
 defineProps<TableProps>();
 function getItemValue(header: TableHeader, item: TableItem) {
   const paths = header.itemKey.split('.');

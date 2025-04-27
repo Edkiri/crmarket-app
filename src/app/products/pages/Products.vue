@@ -1,9 +1,26 @@
 <template>
-  <ProductHeader @search="search()" @open-create-modal="showCreateModal = true" />
+  <ProductHeader
+    @search="searchProducts()"
+    @open-create-modal="showCreateModal = true"
+    :loading="loadingProducts"
+  />
 
-  <ProductTable :products="products" @select="handleSelectProduct" />
+  <Loading class="mt-4" v-if="loadingProducts" />
+  <div v-else>
+    <Pagination
+      class="mt-4"
+      v-model:current-page="pagination.currentPage"
+      :pagination="pagination"
+    />
 
-  <ProductCreateModal v-if="showCreateModal" @close="showCreateModal = false" @created="search()" />
+    <ProductTable class="mt-2" :products="products" @select="handleSelectProduct" />
+  </div>
+
+  <ProductCreateModal
+    v-if="showCreateModal"
+    @close="showCreateModal = false"
+    @created="searchProducts()"
+  />
 
   <ProductUpdateModal
     v-if="showUpdateModal && selectedProduct"
@@ -15,47 +32,57 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import useQueryProducts from '@/app/products/composables/useQueryProducts';
 import useStore from '@/composables/use-store';
 import ProductTable from '@/app/products/components/ProductTable.vue';
 import ProductCreateModal from '@/app/products/components/ProductCreateModal.vue';
 import ProductHeader from '@/app/products/components/ProductHeader.vue';
 import ProductUpdateModal from '@/app/products/components/ProductUpdateModal.vue';
 import { Product } from '../types';
+import Pagination from '@/ui/pagination/Pagination.vue';
+import Loading from '@/ui/icons/Loading.vue';
 
-const { products, query, selectedProduct } = storeToRefs(useStore('products'));
+const selectedProduct = ref<Product | null>(null);
 const showCreateModal = ref(false);
 const showUpdateModal = ref(false);
+
+const productsStore = useStore('products');
+const { searchProducts, refreshCurrentPage, changePage } = productsStore;
+const { products, pagination, loadingProducts } = storeToRefs(productsStore);
 
 const categoriesStore = useStore('categories');
 
 onMounted(() => {
-  search();
   categoriesStore.fetchCategories();
+  if (!pagination.value.currentQuery) {
+    searchProducts();
+  } else {
+    refreshCurrentPage();
+  }
 });
 
-async function search() {
-  products.value = await useQueryProducts(query.value);
-}
+watch(
+  () => pagination.value.currentPage,
+  newPage => {
+    changePage(newPage);
+  }
+);
+
 function handleSelectProduct(product: Product) {
   selectedProduct.value = product;
   showUpdateModal.value = true;
 }
 
 function closeUpdateModal() {
-  showUpdateModal.value = false;
   selectedProduct.value = null;
 }
 
 function handleUpdated() {
-  closeUpdateModal();
-  search();
+  refreshCurrentPage();
 }
 
 function handleDelete() {
-  closeUpdateModal();
-  search();
+  refreshCurrentPage();
 }
 </script>

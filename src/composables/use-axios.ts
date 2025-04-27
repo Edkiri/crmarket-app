@@ -70,7 +70,7 @@ export default function useAxios() {
 
   const handleError = (err: any) => {
     if (isAxiosError(err)) {
-      if ([401, 403].includes(err.response!.status)) {
+      if ([401].includes(err.response!.status)) {
         auth.logout();
         return;
       }

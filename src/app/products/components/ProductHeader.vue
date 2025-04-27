@@ -1,30 +1,31 @@
 <template>
-  <div class="flex justify-between gap-4">
-    <form class="flex w-full" @submit.prevent="$emit('search')">
-      <div class="grow">
+  <div class="flex justify-between gap-2 items-center">
+    <form class="grid grid-cols-2 gap-2 w-full" @submit.prevent="$emit('search')">
+      <div class="flex">
         <input
-          class="w-full text-[14px] text-gray-400 focus:border-blue-500 outline-none h-8 px-3 py-[5px] border border-gray-700 rounded-l-md focus:inset-shadow-blue-inner"
+          class="w-full text-[14px] text-gray-400 focus:border-blue-500 outline-none h-10 px-3 py-[5px] border border-gray-700 rounded-md focus:inset-shadow-blue-inner"
           type="text"
           placeholder="Buscar productos..."
-          v-model="query.name"
+          v-model="query.searchValue"
         />
       </div>
-
-      <button
-        class="cursor-pointer w-8 h-8 flex justify-center items-center border border-l-0 border-gray-700 rounded-r-md bg-blue-200"
-        type="button"
-        @click="$emit('search')"
-      >
-        <Search class="w-[16px] h-[16px] fill-neutral-700" />
-      </button>
+      <CategorySelect class="w-full" v-model:selected="query.categories" />
     </form>
+
+    <BaseButton
+      @click="$emit('search')"
+      label="Buscar"
+      type="button"
+      icon="Search"
+      custom-classes="h-10 bg-blue-600 text-white hover:bg-blue-700"
+    />
 
     <BaseButton
       @click="$emit('openCreateModal')"
       label="Nuevo"
       type="button"
       icon="Inventory"
-      custom-classes="text-neutral-200 bg-[#055d20] border-[1px] border-[#013d14] hover:bg-[#087f3e]"
+      custom-classes="h-10 text-neutral-200 bg-[#055d20] border-[1px] border-[#013d14] hover:bg-[#087f3e]"
     />
   </div>
 </template>
@@ -32,10 +33,15 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import useStore from '@/composables/use-store';
-import Search from '@/ui/icons/Search.vue';
 import BaseButton from '@/ui/buttons/BaseButton.vue';
-
-defineEmits(['search', 'openCreateModal']);
+import CategorySelect from '@/app/categories/components/CategorySelect.vue';
 
 const { query } = storeToRefs(useStore('products'));
+
+interface Props {
+  loading: boolean;
+}
+
+defineEmits(['search', 'openCreateModal']);
+defineProps<Props>();
 </script>

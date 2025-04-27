@@ -3,22 +3,22 @@ import useStore from '@/composables/use-store';
 import NotFound from '@/ui/pages/NotFound.vue';
 import Products from '@/app/products/pages/Products.vue';
 import Login from '@/app/auth/pages/Login.vue';
+import { storeToRefs } from 'pinia';
+import { PagesLinks } from './types';
+import Categories from '@/app/categories/pages/Categories.vue';
 
 const routes = [
-  { path: '/', name: 'Home', component: Login },
+  { path: PagesLinks.home, component: Login, meta: { public: true } },
   {
-    path: '/:slugName',
-    name: 'LoginWithSlug',
-    component: Login,
-  },
-  {
-    path: '/inventory',
-    name: 'Inventory',
+    path: PagesLinks.inventory,
     component: Products,
   },
   {
+    path: PagesLinks.categories,
+    component: Categories,
+  },
+  {
     path: '/:pathMatch(.*)*',
-    name: 'CatchAllNotFound',
     component: NotFound,
   },
 ];
@@ -29,11 +29,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
-  const { accessToken } = useStore('auth');
+  if (to.meta.public === true) return next();
 
-  const isAuthenticated = !!accessToken;
+  const { isAuthenticated } = storeToRefs(useStore('auth'));
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  if (!isAuthenticated.value) {
     return next('/');
   }
 
